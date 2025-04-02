@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "AdminRole" AS ENUM ('ADMIN', 'SUPER_ADMIN');
+
+-- CreateEnum
 CREATE TYPE "LearningCenterStatus" AS ENUM ('PENDING', 'ACTIVATED', 'REJECTED', 'INACTIVE');
 
 -- CreateEnum
@@ -16,6 +19,7 @@ CREATE TABLE "Admins" (
     "fullName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "role" "AdminRole" NOT NULL,
 
     CONSTRAINT "Admins_pkey" PRIMARY KEY ("id")
 );
