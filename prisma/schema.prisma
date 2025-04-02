@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admins {
+  id       String @id @default(uuid())
+  fullName String
+  email    String @unique
+  password String
+}
+
+model Region {
+  id             String           @id @default(uuid())
+  name           String
+  LearningCenter LearningCenter[]
+}
+
+enum LearningCenterStatus {
+  PENDING
+  ACTIVATED
+  REJECTED
+  INACTIVE
+}
+
+model LearningCenter {
+  id       String               @id @default(uuid())
+  name     String
+  email    String               @unique
+  phone    String               @unique
+  password String
+  document String
+  location String
+  regionId String
+  region   Region               @relation(fields: [regionId], references: [id])
+  image    String
+  status   LearningCenterStatus @default(INACTIVE)
+  role     String               @default("Center")
+  Teachers Teachers[]
+}
+
+enum TeacherStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Teachers {
+  id                   String         @id @default(uuid())
+  fullName             String
+  email                String         @unique
+  phone                String         @unique
+  password             String
+  sertificate          String
+  status               TeacherStatus  @default(INACTIVE)
+  avatar               String
+  role                 String         @default("Teacher")
+  learningcenterId     String
+  learningcenter       LearningCenter @relation(fields: [learningcenterId], references: [id])
+  Group                Groups[]
+  ResultTeacher        Result[]       @relation("Teacher")
+  ResultCheckerTeacher Result[]       @relation("CheckerTeacher")
+}
+
+model Groups {
+  id           String     @id @default(uuid())
+  name         String
+  teacherId    String
+  teachers     Teachers   @relation(fields: [teacherId], references: [id])
+  startTime    DateTime   @default(now())
+  endTime      DateTime   @default(now())
+  avarageScore String
+  Student      Students[]
+}
+
+model Students {
+  id       String @id @default(uuid())
+  fullName String
+  phone    String @unique
+  role     String @default("Student")
+  password String
+  avatar   String
+  groupId  String
+  group    Groups @relation(fields: [groupId], references: [id])
+  Exam     Exam[]
+}
+
+model ReadingVariant {
+  id           String         @id @default(uuid())
+  readingName  String
+  isReady      Boolean        @default(false)
+  ReadingBlock ReadingBlock[]
+  Exam         Exam[]
+}
+
+enum ReadingBlockPartNameType {
+  PART1
+  PART2
+  PART3
+}
+
+model ReadingBlock {
+  id                    String                   @id @default(uuid())
+  text                  String
+  readingVariantId      String
+  readingVariant        ReadingVariant           @relation(fields: [readingVariantId], references: [id])
+  partName              ReadingBlockPartNameType
+  ReadingBlockQuestions ReadingBlockQuestions[]
+}
+
+enum ReadingBlockQuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE_NOT_GIVEN
+  YES_NO_NOT_GIVEN
+  MATCHING_HEADINGS
+  MATCHING_INFORMATION
+  MATCHING_FEATURES
+  MATCHING_SENTENCE_ENDINGS
+  SENTENCE_COMPLETION
+  SUMMARY_COMPLETION
+  NOTE_COMPLETION
+  DIAGRAM_LABEL_COMPLETION
+  SHORT_ANSWER
+  LIST_SELECTION
+  GLOBAL_MULTIPLE_CHOICE
+}
+
+model ReadingBlockQuestions {
+  id               String                   @id @default(uuid())
+  readingBlockId   String
+  readingBlock     ReadingBlock             @relation(fields: [readingBlockId], references: [id])
+  description      String
+  type             ReadingBlockQuestionType
+  ReadingQuestions ReadingQuestions[]
+}
+
+model ReadingQuestions {
+  id                     String                @id @default(uuid())
+  options                String[]
+  isCorrect              String[]
+  questionNumber         Int
+  readingBlockQuestionId String
+  readingBlockQuestion   ReadingBlockQuestions @relation(fields: [readingBlockQuestionId], references: [id])
+}
+
+model WritingVariant {
+  id           String         @id @default(uuid())
+  writingName  String
+  isReady      Boolean        @default(false)
+  WritingBlock WritingBlock[]
+  Exam         Exam[]
+}
+
+model WritingBlock {
+  id               String         @id @default(uuid())
+  task             String
+  description      String
+  image            String
+  writingVariantId String
+  writingVariant   WritingVariant @relation(fields: [writingVariantId], references: [id])
+}
+
+model Exam {
+  id               String         @id @default(uuid())
+  studentId        String
+  student          Students       @relation(fields: [studentId], references: [id])
+  readingVariantId String
+  readingVariant   ReadingVariant @relation(fields: [readingVariantId], references: [id])
+  writingVariantId String
+  writingVariant   WritingVariant @relation(fields: [writingVariantId], references: [id])
+  Result           Result[]
+}
+
+model Result {
+  id                String   @id @default(uuid())
+  examId            String
+  exam              Exam     @relation(fields: [examId], references: [id])
+  teacherId         String
+  teacher           Teachers @relation("Teacher", fields: [teacherId], references: [id])
+  cheackerTeacherId String
+  cheackerTeacher   Teachers @relation("CheckerTeacher", fields: [cheackerTeacherId], references: [id])
+  writingScore      Int
+  readingScore      Int
+}
