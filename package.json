@@ -1,8 +1,8 @@
 {
-  "name": "5-dars, uyga-vazifa, IELTS proejct with NestJs",
+  "name": "homework",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Abdulboriy Mahamatjanov",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -21,8 +21,16 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.1.0",
+    "@prisma/client": "^6.5.0",
+    "@types/multer": "^1.4.12",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "multer": "^1.4.5-lts.2",
+    "prisma": "^6.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
